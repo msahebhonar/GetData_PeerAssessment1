@@ -6,4 +6,4 @@ Data collected from the accelerometers from the *Samsung Galaxy S smartphone* we
 - **run_analysis.R**, which contains R code for cleaning and summarizing data
 - **CodeBook.md**, which provides information about the dataset and variables 
 
-** Details of analysis were explained in CodeBook.md ** 
+**Details of analysis were explained in CodeBook.md** 
