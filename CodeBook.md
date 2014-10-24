@@ -117,6 +117,10 @@ Read Data files
 Required libraries were loaded.
 
     library(data.table)
+
+    ## data.table 1.9.4  For help type: ?data.table
+    ## *** NB: by=.EACHI is now explicit. See README to restore previous behaviour.
+
     library(plyr)
 
 List of all features from **features.txt** and class labels of activity
@@ -126,9 +130,10 @@ name from **activity\_labels.txt** files were read.
     feat.info <- read.table("features.txt", colClasses = "character")
     activity  <- read.table("activity_labels.txt")
 
-Training datasets consist of 3 files including, subject, variable and
+Training dataset consists of 3 files including, subject, variable and
 activity. Variable file was modified by a 3rd-party software to change
-end of file. Finally train data frame was created.
+end of lines. This modification made it possible to use **fread()**.
+Finally train dataset was created.
 
     setwd("train/")
     train.sub <- read.table("subject_train.txt")
@@ -139,9 +144,10 @@ end of file. Finally train data frame was created.
 
     ## [1] 7352  563
 
-Test datasets also consist of 3 files including, subject, variable and
+Test dataset also consists of 3 files including, subject, variable and
 activity. Variable file was modified by a 3rd-party software to change
-end of file. Finally test data frame was created.
+end of lines. This modification made it possible to use **fread()**.
+Finally test dataset was created.
 
     setwd("~/UCI HAR Dataset/test/")
     test.sub <- read.table("subject_test.txt")
@@ -170,8 +176,9 @@ one dataset with all subjects.
 2. Extracts only the measurements on the mean and standard deviation for each measurement
 =========================================================================================
 
-The **mean** and **standard deviation** measurements were extracted with
-finding related columns with using information from **features.txt**.
+The **mean** and **standard deviation** columns id were determined with
+using **grep()** on **features.txt** file. Based on the columns id, a
+subset of dataset was produced.
 
     hdr.mean.num <- grep("-mean()", feat.info[, 2], fixed = T)
     hdr.std.num  <- grep("-std()", feat.info[, 2], fixed = T)
@@ -252,7 +259,7 @@ finding related columns with using information from **features.txt**.
 =========================================================================
 
 To name activities in dataset, data from **activity\_labels** file were
-applied to **join function**.
+applied to **join()**.
 
     names(activity)        <- c("ActCode", "Activity")
     colnames(Dataset)[563] <- "ActCode"
@@ -397,10 +404,9 @@ data**:
 *'Hadley Wickham 2014, Tidy Data, Journal of Statistical Software, Vol.
 59, No. 10.'*
 
-To achieve this definition, I iterated **ddply function** to calculate
-mean of each variable for each subject and activity. The output of ddpyl
-function in each iteration appended to previous dataset to generate a
-tidy dataset.
+To achieve this definition, I iterated **ddply()** to calculate mean of
+each variable for each subject and activity. The output of ddpyl() in
+each iteration appended to previous dataset to generate a tidy dataset.
 
     data <- matrix(numeric(0), ncol = 3)
     for(i in 1:561){
