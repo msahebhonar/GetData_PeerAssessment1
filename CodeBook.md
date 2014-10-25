@@ -117,10 +117,6 @@ Read Data files
 Required libraries were loaded.
 
     library(data.table)
-
-    ## data.table 1.9.4  For help type: ?data.table
-    ## *** NB: by=.EACHI is now explicit. See README to restore previous behaviour.
-
     library(plyr)
 
 List of all features from **features.txt** and class labels of activity
