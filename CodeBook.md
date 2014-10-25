@@ -114,27 +114,23 @@ window sample. These are used on the angle() variable:
 Read Data files
 ===============
 
-Required libraries were loaded.
+I first loaded library **plyr**. Next, I read list of all features from
+**features.txt** and class labels of activity name from
+**activity\_labels.txt** files into R.
 
-    library(data.table)
     library(plyr)
-
-List of all features from **features.txt** and class labels of activity
-name from **activity\_labels.txt** files were read.
 
     setwd("~/UCI HAR Dataset/")
     feat.info <- read.table("features.txt", colClasses = "character")
     activity  <- read.table("activity_labels.txt")
 
 Training and test datasets consist of 3 files including, subject,
-X\_train or X\_test and y\_activity. To improve performance, once X\_...
-files was read by **read.table()** and saved to mX\_... files by
-**write.table()**. This modification made it possible to use **fread()**
-in subsequent runs. Finally datasets was created.
+X\_train or X\_test and y\_activity. I created data frame from these
+files.
 
     setwd("train/")
     train.sub <- read.table("subject_train.txt")
-    train.x   <- fread("mX_train.txt")
+    train.x   <- read.table("X_train.txt")
     train.y   <- read.table("y_train.txt")
     trainSet  <- data.frame(train.x, train.sub, train.y)
     dim(trainSet)
@@ -143,18 +139,21 @@ in subsequent runs. Finally datasets was created.
 
     setwd("~/UCI HAR Dataset/test/")
     test.sub <- read.table("subject_test.txt")
-    test.x   <- fread("mX_test.txt")
+    test.x   <- read.table("X_test.txt")
     test.y   <- read.table("y_test.txt")
     testSet  <- data.frame(test.x, test.sub, test.y)
     dim(testSet)
 
     ## [1] 2947  563
 
+Number of observation in training and test datasets were **7352** and
+**2947**, respectively.
+
 1. Merges the training and the test sets to create one data set.
 ================================================================
 
-In this stage, two **trainSet** and **testSet** were merged to generate
-one dataset that contains all subjects.
+In this stage, I merged two **trainSet** and **testSet** to generate one
+dataset that contains all subjects.
 
     Dataset <- rbind(trainSet, testSet)
     dim(Dataset)
@@ -165,12 +164,14 @@ one dataset that contains all subjects.
 
     ## 44.2 Mb
 
+Number of observations in merged dataset was **10299**.
+
 2. Extracts only the measurements on the mean and standard deviation for each measurement
 =========================================================================================
 
-The **mean** and **standard deviation** columns id were determined with
-using **grep()** on **features.txt** file. Based on the columns id, a
-subset of dataset was produced.
+To determine the **mean** and **standard deviation** columns, I applied
+**grep()** on **features.txt** file. Then, I produced a subset of
+dataset based on sorted column IDs.
 
     hdr.mean.num <- grep("-mean()", feat.info[, 2], fixed = T)
     hdr.std.num  <- grep("-std()", feat.info[, 2], fixed = T)
@@ -250,8 +251,8 @@ subset of dataset was produced.
 3. Uses descriptive activity names to name the activities in the data set
 =========================================================================
 
-To name activities in dataset, data from **activity\_labels** file were
-applied to **join()**.
+To name activities in dataset, I applied data from **activity\_labels**
+file to **join()**.
 
     names(activity)        <- c("ActCode", "Activity")
     colnames(Dataset)[563] <- "ActCode"
@@ -268,8 +269,8 @@ applied to **join()**.
 4. Appropriately labels the data set with descriptive variable names
 ====================================================================
 
-With using data from **features.txt** file, dataset column names were
-set.
+I set dataset column names with using data from second column of
+**features.txt** file.
 
     names(Dataset)[1:561] <- feat.info[, 2]
     names(Dataset)[562]   <- "subject"
@@ -397,8 +398,9 @@ data**:
 59, No. 10.'*
 
 To achieve this definition, I iterated **ddply()** to calculate mean of
-each variable for each subject and activity. The output of ddpyl() in
-each iteration appended to previous dataset to generate a tidy dataset.
+each variable for each subject and activity. I appended the output of
+ddply() in each iteration to previous dataset to generate a tidy
+dataset.
 
     data <- matrix(numeric(0), ncol = 3)
     for(i in 1:561){
@@ -409,12 +411,12 @@ each iteration appended to previous dataset to generate a tidy dataset.
     head(data)
 
     ##   subject           Activity       value          variable
-    ## 1       1             LAYING  0.27434761 tBodyAcc-mean()-X
-    ## 2       1            SITTING -0.01774343 tBodyAcc-mean()-X
-    ## 3       1           STANDING -0.10892504 tBodyAcc-mean()-X
-    ## 4       1            WALKING -0.60777952 tBodyAcc-mean()-X
-    ## 5       1 WALKING_DOWNSTAIRS -0.51019151 tBodyAcc-mean()-X
-    ## 6       1   WALKING_UPSTAIRS -0.61306121 tBodyAcc-mean()-X
+    ## 1       1             LAYING  0.27434726 tBodyAcc-mean()-X
+    ## 2       1            SITTING -0.01774349 tBodyAcc-mean()-X
+    ## 3       1           STANDING -0.10892503 tBodyAcc-mean()-X
+    ## 4       1            WALKING -0.60778382 tBodyAcc-mean()-X
+    ## 5       1 WALKING_DOWNSTAIRS -0.51019138 tBodyAcc-mean()-X
+    ## 6       1   WALKING_UPSTAIRS -0.61306430 tBodyAcc-mean()-X
 
     setwd("~/UCI HAR Dataset/")
     write.table(data, "output.txt", row.names = F, sep = "\t")
